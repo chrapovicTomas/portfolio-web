@@ -1,0 +1,254 @@
+.footer {
+    background-color: var(--bg-main);
+    /* Ensure dark blend */
+    padding: 6rem 0 3rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative Background CSS Lines */
+.footer-decorations {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.footer-decorations>div {
+    opacity: 0.8;
+}
+
+/* TOP SETTINGS */
+.decor-angle-top {
+    position: absolute;
+    left: 0;
+    top: 140px;
+    width: 141.4px;
+    height: 2px;
+    background: linear-gradient(to right, rgba(59, 130, 246, 0), var(--accent-primary));
+    transform-origin: left center;
+    transform: rotate(-45deg);
+}
+
+.decor-horizontal-top {
+    position: absolute;
+    left: 100px;
+    top: 40px;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary) 70%, transparent);
+}
+
+.decor-circle-top {
+    position: absolute;
+    left: 100px;
+    top: 40px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-primary);
+    background: var(--bg-main);
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px var(--accent-primary);
+}
+
+/* BOTTOM SETTINGS */
+.decor-angle-bottom {
+    position: absolute;
+    right: 0;
+    bottom: 125px;
+    width: 141.4px;
+    height: 2px;
+    background: linear-gradient(to left, rgba(59, 130, 246, 0), var(--accent-secondary));
+    transform-origin: right center;
+    transform: rotate(-45deg);
+}
+
+.decor-horizontal-bottom {
+    position: absolute;
+    right: 100px;
+    bottom: 25px;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(to left, var(--accent-secondary), var(--accent-primary) 70%, transparent);
+}
+
+.decor-circle-bottom {
+    position: absolute;
+    right: 100px;
+    bottom: 25px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-secondary);
+    background: var(--bg-main);
+    transform: translate(50%, 50%);
+    box-shadow: 0 0 10px var(--accent-secondary);
+}
+
+.footer-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    position: relative;
+    z-index: 1;
+    /* keep content above decorative lines */
+}
+
+/* TOP SECTION */
+.footer-top {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    justify-content: space-between;
+}
+
+@media (min-width: 992px) {
+    .footer-top {
+        flex-direction: row;
+        align-items: flex-end;
+    }
+}
+
+/* LEFT: Huge Typography */
+.footer-hero-name {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.name-role {
+    color: var(--text-secondary);
+    font-size: 4rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+@media (min-width: 768px) {
+    .name-role {
+        position: absolute;
+        bottom: 1rem;
+        left: -8rem;
+        /* Place outside to the left */
+        text-align: right;
+    }
+}
+
+.name-large h1 {
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-family: monospace, sans-serif;
+    /* Gives that technical vibe */
+    color: var(--text-primary);
+}
+
+.name-large .name-indent {
+    margin-left: 2rem;
+}
+
+@media (min-width: 768px) {
+    .name-large .name-indent {
+        margin-left: 10vw;
+    }
+}
+
+/* RIGHT: Contacts */
+.footer-contacts-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 300px;
+}
+
+.contacts-title {
+    font-size: 1.2rem;
+    font-family: monospace;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.footer-nav {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.footer-nav a {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    transition: color var(--transition-fast);
+}
+
+.footer-nav a:hover {
+    color: var(--accent-primary);
+}
+
+.footer-site-box {
+    margin-top: 1rem;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.footer-site-box h4 {
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.footer-site-box p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.8;
+}
+
+/* BOTTOM SECTION: Social Pills */
+.footer-bottom-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 2rem;
+}
+
+@media (min-width: 768px) {
+    .footer-bottom-pills {
+        justify-content: flex-start;
+    }
+}
+
+.social-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    transition: all var(--transition-fast);
+    flex-grow: 1;
+    justify-content: center;
+}
+
+@media (min-width: 768px) {
+    .social-pill {
+        flex-grow: 0;
+        min-width: 140px;
+    }
+}
+
+.social-pill:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
