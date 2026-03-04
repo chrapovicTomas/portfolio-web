@@ -1,25 +1,27 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Terminal, Database, Layout, Server, Figma, Code, GitBranch, Users, MessageSquare, Target, Lightbulb, Clock, BrainCircuit } from 'lucide-react';
 import './Skills.css';
 
 const hardSkills = [
-    { name: 'C / C++', icon: <Terminal size={24} /> },
-    { name: 'Python', icon: <Server size={24} /> },
-    { name: 'Java', icon: <Database size={24} /> },
-    { name: 'React, HTML, CSS', icon: <Layout size={24} /> },
-    { name: 'JavaScript, TypeScript', icon: <Code size={24} /> },
-    { name: 'UI / UX', icon: <Figma size={24} /> },
-    { name: 'GIT, Linux, Unity', icon: <GitBranch size={24} /> },
+    { name: 'C / C++', icon: <Terminal size={20} />, type: 'hard' },
+    { name: 'Python', icon: <Server size={20} />, type: 'hard' },
+    { name: 'Java', icon: <Database size={20} />, type: 'hard' },
+    { name: 'React', icon: <Layout size={20} />, type: 'hard' },
+    { name: 'HTML / CSS', icon: <Layout size={20} />, type: 'hard' },
+    { name: 'JavaScript, TypeScript', icon: <Code size={20} />, type: 'hard' },
+    { name: 'UI / UX', icon: <Figma size={20} />, type: 'hard' },
+    { name: 'GIT', icon: <GitBranch size={20} />, type: 'hard' },
+    { name: 'Unity', icon: <Database size={20} />, type: 'hard' }
 ];
 
-const otherSkills = [
-    { name: 'Communication', icon: <MessageSquare size={24} /> },
-    { name: 'Teamwork', icon: <Users size={24} /> },
-    { name: 'Adaptability', icon: <Target size={24} /> },
-    { name: 'Time Management', icon: <Clock size={24} /> },
-    { name: 'Problem Solving', icon: <BrainCircuit size={24} /> },
-    { name: 'Creativity', icon: <Lightbulb size={24} /> }
+const softSkills = [
+    { name: 'Communication', icon: <MessageSquare size={20} />, type: 'soft' },
+    { name: 'Teamwork', icon: <Users size={20} />, type: 'soft' },
+    { name: 'Adaptability', icon: <Target size={20} />, type: 'soft' },
+    { name: 'Time Mgmt', icon: <Clock size={20} />, type: 'soft' },
+    { name: 'Problem Solving', icon: <BrainCircuit size={20} />, type: 'soft' },
+    { name: 'Creativity', icon: <Lightbulb size={20} />, type: 'soft' }
 ];
 
 const languages = [
@@ -28,6 +30,65 @@ const languages = [
     { name: 'English', level: 'B2', code: 'EN' },
     { name: 'German', level: 'A2', code: 'DE' },
 ];
+
+interface SkillProps {
+    name: string;
+    icon: React.ReactNode;
+    type: string;
+}
+
+const BentoCard3D = ({ item, index }: { item: SkillProps, index: number }) => {
+    const ref = useRef<HTMLDivElement>(null);
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+
+    const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
+    const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
+
+    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["17.5deg", "-17.5deg"]);
+    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-17.5deg", "17.5deg"]);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!ref.current) return;
+        const rect = ref.current.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const xPct = mouseX / width - 0.5;
+        const yPct = mouseY / height - 0.5;
+        x.set(xPct);
+        y.set(yPct);
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0);
+        y.set(0);
+    };
+
+    return (
+        <motion.div
+            ref={ref}
+            className={`bento-3d-wrapper ${item.type}`}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            style={{
+                rotateX,
+                rotateY,
+                transformStyle: "preserve-3d"
+            }}
+            initial={{ opacity: 0, scale: 0.8, y: 30 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5, delay: index * 0.05 }}
+        >
+            <div className="bento-3d-card glass-panel">
+                <div className="bento-3d-icon">{item.icon}</div>
+                <h4 className="bento-3d-title">{item.name}</h4>
+            </div>
+        </motion.div>
+    );
+};
 
 const Skills: React.FC = () => {
     return (
@@ -38,91 +99,61 @@ const Skills: React.FC = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-100px" }}
                     transition={{ duration: 0.6 }}
-                    className="section-header"
+                    className="section-header center"
                 >
                     <h2 className="section-title">My <span className="text-gradient">Skills.</span></h2>
-                    <div className="section-line"></div>
+                    <p className="section-subtitle" style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>Technologies & Tools I work with</p>
                 </motion.div>
 
                 <div className="skills-content">
-                    {/* Hard Skills */}
+                    <div className="bento-3d-split-container">
+                        <div className="bento-3d-category">
+                            <h3 className="category-title">Hard Skills</h3>
+                            <div className="bento-3d-grid hardskills-grid">
+                                {hardSkills.map((skill, index) => (
+                                    <BentoCard3D key={`hard-${index}`} item={skill} index={index} />
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="bento-3d-category">
+                            <h3 className="category-title">Soft Skills</h3>
+                            <div className="bento-3d-grid softskills-grid">
+                                {softSkills.map((skill, index) => (
+                                    <BentoCard3D key={`soft-${index}`} item={skill} index={index} />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Languages Section */}
                     <motion.div
                         className="skills-category"
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
+                        transition={{ duration: 0.6, delay: 0.6 }}
                     >
-                        <h3>Hard Skills</h3>
-                        <div className="skills-grid">
-                            {hardSkills.map((skill, index) => (
+                        <h3>Languages</h3>
+                        <div className="languages-grid">
+                            {languages.map((lang, index) => (
                                 <motion.div
-                                    key={`hard-${index}`}
-                                    className="skill-card glass-panel"
+                                    key={`lang-${index}`}
+                                    className="language-card glass-panel"
                                     whileHover={{ y: -5, scale: 1.05 }}
                                     transition={{ type: "spring", stiffness: 300 }}
                                 >
-                                    <div className="skill-icon">{skill.icon}</div>
-                                    <span className="skill-name">{skill.name}</span>
+                                    <div className="lang-code-circle">
+                                        <span>{lang.code}</span>
+                                    </div>
+                                    <div className="lang-info">
+                                        <span className="lang-name">{lang.name}</span>
+                                        <span className="lang-level text-gradient">{lang.level}</span>
+                                    </div>
                                 </motion.div>
                             ))}
                         </div>
                     </motion.div>
-
-                    <div className="skills-row">
-                        {/* Other Skills */}
-                        <motion.div
-                            className="skills-category"
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: "-100px" }}
-                            transition={{ duration: 0.6, delay: 0.4 }}
-                        >
-                            <h3>Other Skills</h3>
-                            <div className="skills-grid">
-                                {otherSkills.map((skill, index) => (
-                                    <motion.div
-                                        key={`other-${index}`}
-                                        className="skill-card glass-panel"
-                                        whileHover={{ y: -5, scale: 1.05 }}
-                                        transition={{ type: "spring", stiffness: 300 }}
-                                    >
-                                        <div className="skill-icon">{skill.icon}</div>
-                                        <span className="skill-name">{skill.name}</span>
-                                    </motion.div>
-                                ))}
-                            </div>
-                        </motion.div>
-
-                        {/* Languages */}
-                        <motion.div
-                            className="skills-category"
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: "-100px" }}
-                            transition={{ duration: 0.6, delay: 0.6 }}
-                        >
-                            <h3>Languages</h3>
-                            <div className="languages-grid">
-                                {languages.map((lang, index) => (
-                                    <motion.div
-                                        key={`lang-${index}`}
-                                        className="language-card glass-panel"
-                                        whileHover={{ y: -5, scale: 1.05 }}
-                                        transition={{ type: "spring", stiffness: 300 }}
-                                    >
-                                        <div className="lang-code-circle">
-                                            <span>{lang.code}</span>
-                                        </div>
-                                        <div className="lang-info">
-                                            <span className="lang-name">{lang.name}</span>
-                                            <span className="lang-level text-gradient">{lang.level}</span>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    </div>
                 </div>
             </div>
         </section>

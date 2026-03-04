@@ -19,7 +19,7 @@
 .timeline-line {
     position: absolute;
     top: 0;
-    left: 1rem;
+    left: 2rem;
     width: 2px;
     height: 100%;
     background: rgba(255, 255, 255, 0.1);
@@ -29,7 +29,7 @@
 .timeline-line-glow {
     position: absolute;
     top: 0;
-    left: 1rem;
+    left: 2rem;
     width: 2px;
     height: 100%;
     /* Will be overridden by Framer Motion */
@@ -53,65 +53,146 @@
     display: flex;
     flex-direction: column;
     gap: 3rem;
+    perspective: 2000px;
+    position: relative;
+    z-index: 2;
+    /* Ensures to sit above the glow line */
 }
 
-.timeline-item {
+.timeline-item-container {
     position: relative;
     width: 100%;
-    padding-left: 3rem;
+    padding-left: 4.5rem;
+    display: flex;
+    flex-direction: column-reverse;
+    /* Put dates above on mobile */
+    gap: 1.5rem;
+    padding-bottom: 4rem;
 }
 
 @media (min-width: 768px) {
-    .timeline-item {
-        width: 50%;
+    .timeline-item-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         padding-left: 0;
+        gap: 0;
+        min-height: 60vh;
+        padding-bottom: 0;
+    }
+}
+
+.timeline-left {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .timeline-left {
+        padding-right: 4rem;
+        justify-content: flex-end;
+    }
+}
+
+.timeline-right {
+    position: relative;
+    z-index: 1;
+}
+
+@media (min-width: 768px) {
+    .timeline-right {
+        padding-left: 4rem;
+    }
+}
+
+.sticky-date-wrapper {
+    position: sticky;
+    top: 50vh;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.sticky-date {
+    font-size: 2rem;
+    font-weight: 800;
+    font-family: var(--font-sans);
+    color: var(--text-secondary);
+    opacity: 0.3;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 0;
+    transform-origin: left center;
+}
+
+.sticky-date.active-date {
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 1;
+    transform: scale(1.05);
+    filter: drop-shadow(0 4px 15px rgba(59, 130, 246, 0.2));
+    animation: shine 6s linear infinite;
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
+}
+
+@media (max-width: 767px) {
+    .sticky-date-wrapper {
+        position: relative;
+        top: 0;
+        transform: none;
+        margin-bottom: 0;
     }
 
-    .timeline-item:nth-child(odd) {
-        left: 0;
-        padding-right: 3rem;
-        text-align: right;
+    .sticky-date {
+        font-size: 1.6rem;
+        opacity: 0.8;
     }
 
-    .timeline-item:nth-child(even) {
-        left: 50%;
-        padding-left: 3rem;
+    .sticky-date.active-date {
+        transform: scale(1.05);
+        transform-origin: left bottom;
     }
 }
 
 .timeline-dot {
     position: absolute;
-    left: 1rem;
-    top: 0;
+    left: 2rem;
+    top: 4rem;
+    /* approximate center of content on mobile */
     width: 2rem;
     height: 2rem;
     background: var(--bg-surface);
     border: 2px solid rgba(255, 255, 255, 0.2);
-    /* inactive border */
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: rgba(255, 255, 255, 0.5);
-    /* inactive color */
-    transform: translateX(-50%);
-    z-index: 2;
+    transform: translate(-50%, -50%);
+    z-index: 10;
     transition: all 0.5s ease;
 }
 
 .active-item-dot {
+    background: rgba(15, 23, 42, 0.95);
     border-color: var(--accent-primary);
     color: var(--accent-primary);
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.6), inset 0 0 10px rgba(59, 130, 246, 0.3);
 }
 
 @media (min-width: 768px) {
     .timeline-dot {
-        left: 100%;
-    }
-
-    .timeline-item:nth-child(even) .timeline-dot {
-        left: 0;
+        left: 50%;
+        top: 50%;
     }
 }
 
@@ -130,7 +211,7 @@
 
 .active-item {
     border-color: rgba(59, 130, 246, 0.5);
-    box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 10px 30px -10px rgba(6, 90, 224, 0.2);
 }
 
 .timeline-content::before {
@@ -172,7 +253,11 @@
 }
 
 @media (min-width: 768px) {
-    .timeline-item:nth-child(odd) .meta-info {
+    .timeline-content {
+        text-align: right;
+    }
+
+    .meta-info {
         justify-content: flex-end;
     }
 }

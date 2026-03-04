@@ -20,6 +20,14 @@
     opacity: 0.8;
 }
 
+@media (max-width: 991px) {
+
+    .decor-angle-bottom,
+    .decor-angle-top {
+        display: none;
+    }
+}
+
 /* TOP SETTINGS */
 .decor-angle-top {
     position: absolute;
@@ -197,15 +205,48 @@
 }
 
 .footer-site-box h4 {
-    margin-bottom: 1rem;
-    color: var(--text-secondary);
-    font-weight: 500;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.footer-site-box h4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 110px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.514);
+    border-radius: 2px;
 }
 
 .footer-site-box p {
     color: var(--text-secondary);
     font-size: 0.85rem;
     line-height: 1.8;
+}
+
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.contact-list a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    transition: color var(--transition-fast);
+}
+
+.contact-list a:hover {
+    color: var(--text-primary);
 }
 
 /* BOTTOM SECTION: Social Pills */

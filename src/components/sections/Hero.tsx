@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Download } from 'lucide-react';
 import { useTypewriter } from '../../hooks/useTypewriter';
+import { Waves } from '../ui/Waves';
 import './Hero.css';
 
 const codeSnippet = `const developer = {
@@ -18,8 +19,28 @@ const Hero: React.FC = () => {
     const { displayedText, isTyping } = useTypewriter(codeSnippet, 30, 1500);
 
     return (
-        <section id="home" className="hero section">
-            <div className="container hero-container">
+        <section id="home" className="hero section relative">
+            {/* The Waves background lowered and fading out at the top */}
+            <div
+                className="waves-hero-bg"
+                style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '60%',
+                    zIndex: 0,
+                    maskImage: 'linear-gradient(to bottom, transparent, black 40%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 40%)'
+                }}
+            >
+                <Waves
+                    strokeColor="rgba(255, 255, 255, 0.15)"
+                    backgroundColor="transparent"
+                />
+            </div>
+
+            <div className="container hero-container relative z-10">
                 <motion.div
                     className="hero-content"
                     initial={{ opacity: 0, y: 30 }}
@@ -67,13 +88,23 @@ const Hero: React.FC = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.4, duration: 1 }}
                 >
-                    <div className="code-block glass-panel">
-                        <pre>
-                            <code>
-                                {displayedText}
-                                <span className={`cursor ${isTyping ? 'typing' : 'blinking'}`}>_</span>
-                            </code>
-                        </pre>
+                    <div className="code-block modern-editor-window">
+                        <div className="editor-header">
+                            <div className="editor-tabs">
+                                <div className="editor-tab active">
+                                    <span className="tab-icon">ts</span>
+                                    <span>developer.ts</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="editor-body">
+                            <pre>
+                                <code>
+                                    {displayedText}
+                                    <span className={`cursor ${isTyping ? 'typing' : 'blinking'}`}>_</span>
+                                </code>
+                            </pre>
+                        </div>
                     </div>
                 </motion.div>
             </div>

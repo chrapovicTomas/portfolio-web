@@ -13,6 +13,8 @@
     align-items: center;
     position: relative;
     z-index: 2;
+    pointer-events: none;
+    /* Let clicks/hovers pass through to the waves canvas */
 }
 
 @media (min-width: 992px) {
@@ -48,6 +50,8 @@
     font-size: 1.1rem;
     max-width: 500px;
     margin-bottom: 2.5rem;
+    pointer-events: auto;
+    /* re-enable for text selection */
 }
 
 .hero-actions {
@@ -65,6 +69,8 @@
     font-weight: 600;
     transition: all var(--transition-fast);
     cursor: pointer;
+    pointer-events: auto;
+    /* re-enable for clicking buttons */
 }
 
 .btn-primary {
@@ -93,36 +99,107 @@
 /* Code block visual styling */
 .hero-visual {
     position: relative;
+    filter: drop-shadow(0 20px 40px rgba(139, 92, 246, 0.15));
 }
 
-.code-block {
-    padding: 2rem;
-    border-radius: var(--radius-md);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-    font-family: monospace;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    color: #a3b8cc;
+.modern-editor-window {
+    padding: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.7) 0%, rgba(9, 9, 11, 0.8) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    color: #e2e8f0;
     position: relative;
     overflow: hidden;
-    min-height: 250px;
-    /* Zabráni preskakovaniu obsahu počas písania */
+    min-height: 280px;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
 }
 
-.code-block::before {
+/* Subtle glowing accent layer */
+.modern-editor-window::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 4px;
-    background: var(--accent-gradient);
+    height: 100%;
+    background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15), transparent 50%);
+    z-index: 0;
+    pointer-events: none;
 }
 
-.code-block code {
+.editor-header {
+    display: flex;
+    align-items: flex-end;
+    padding: 0 1rem;
+    height: 35px;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    z-index: 1;
+}
+
+.editor-tabs {
+    display: flex;
+    gap: 2px;
+    height: 100%;
+}
+
+.editor-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    height: 35px;
+    margin-bottom: 0px;
+    background: rgba(255, 255, 255, 0.05);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: none;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: default;
+    position: relative;
+}
+
+.editor-tab.active {
+    background: rgba(15, 23, 42, 0.8);
+    color: #fff;
+    border-top: 2px solid var(--accent-primary);
+}
+
+.tab-icon {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #3178c6;
+    text-transform: uppercase;
+}
+
+.editor-body {
+    padding: 1.5rem 1.75rem;
+    flex: 1;
+    overflow-x: auto;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #a3b8cc;
+    position: relative;
+    z-index: 1;
+}
+
+.editor-body pre {
+    margin: 0;
+}
+
+.editor-body code {
     white-space: pre-wrap;
     display: inline;
-    /* Dôležité pre kurzor */
 }
 
 .cursor {

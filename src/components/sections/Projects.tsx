@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence, useInView, MotionValue } from 'framer-motion';
 import { Github, ArrowDown, X } from 'lucide-react';
 import './Projects.css';
 
@@ -65,21 +65,73 @@ const projects = [
     }
 ];
 
-const ProjectCard = ({ project, onOpen }: { project: any, onOpen: () => void }) => {
-    const cardRef = useRef(null);
-    const isInView = useInView(cardRef, { margin: "0px -40% 0px -40%" });
+interface ProjectCardProps {
+    project: any;
+    index: number;
+    total: number;
+    scrollYProgress: MotionValue<number>;
+    onOpen: () => void;
+}
+
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, total, scrollYProgress, onOpen }) => {
+    // Pridáme "padding" – 15% na začiatku a na konci sa karty nehýbu, aby mal užívateľ čas
+    const padding = 0.15;
+    const span = (1 - 2 * padding) / (total - 1);
+    const center = padding + index * span;
+
+    // Vstupné body: [karta je vľavo mimo stred, karta je v strede, karta je vpravo mimo stred]
+    const inputRange = [center - span, center, center + span];
+
+    // Mapovanie hodnôt:
+    // Scale: na krajoch menšia (0.85), v strede normálna (1) - vyrieši to problém s orezávaním
+    const scale = useTransform(scrollYProgress, inputRange, [0.85, 1, 0.85]);
+
+    // RotateY: natočenie. Keď je napravo, natočí sa k tebe dovnútra (-25deg). V strede je rovno (0deg).
+    const rotateY = useTransform(scrollYProgress, inputRange, [25, 0, -25]);
+
+    // Z: 3D hĺbka. Na krajoch je potlačená dozadu (-150px), v strede vystúpi (20px)
+    const z = useTransform(scrollYProgress, inputRange, [-150, 20, -150]);
+
+    // Opacity: Na krajoch mierne priehľadná, v strede jasná
+    const opacity = useTransform(scrollYProgress, inputRange, [0.4, 1, 0.4]);
+
+    // Z-index: Stredná (aktívna) karta musí byť najvyššie, aby nebola prekrytá
+    const zIndex = useTransform(scrollYProgress, inputRange, [0, 10, 0]);
+
+    // Zablokovať klikanie na karty, ktoré nie sú blízko stredu (zrýchli a sprehľadní to UX)
+    const pointerEvents = useTransform(scrollYProgress, (v) => {
+        return Math.abs(v - center) <= span * 0.7 ? "auto" : "none";
+    });
+
+    // Podsvietenie (glow) a border pre aktívnu kartu
+    const boxShadow = useTransform(scrollYProgress, inputRange, [
+        "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+        "0 15px 40px -10px rgba(59, 130, 246, 0.5)",
+        "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+    ]);
+
+    const borderColor = useTransform(scrollYProgress, inputRange, [
+        "rgba(255, 255, 255, 0.05)",
+        "rgba(59, 130, 246, 0.6)",
+        "rgba(255, 255, 255, 0.05)"
+    ]);
 
     return (
         <motion.div
-            ref={cardRef}
-            className={`project-card glass-panel ${isInView ? 'active-project' : ''}`}
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.5 }}
-            whileHover={{ y: -10 }}
-        >
-            <div className="project-image">
+            className="project-card glass-panel"
+            // Použijeme priamo štýly z useTransform pre plynulý efekt
+            style={{
+                scale,
+                rotateY,
+                z,
+                opacity,
+                zIndex,
+                boxShadow,
+                borderColor,
+                pointerEvents: pointerEvents as any
+            }}
+            whileHover={{ y: -10 }} // Jemné posunutie nahor pri hoveri stále funguje
+        >            <div className="project-image">
                 <img src={project.image} alt={project.title} />
                 <div className="project-links">
                     <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="project-link">
@@ -137,7 +189,8 @@ const Projects: React.FC = () => {
         return () => window.removeEventListener('resize', calculateScrollDistance);
     }, []);
 
-    const x = useTransform(scrollYProgress, [0, 1], [0, -scrollDistance]);
+    // Plynulý posun, ale aplikujeme ho iba medzi 0.15 a 0.85 (15% padding)
+    const x = useTransform(scrollYProgress, [0.15, 0.85], [0, -scrollDistance]);
     const lineWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
     // Prevent body scroll when modal is open
@@ -180,7 +233,14 @@ const Projects: React.FC = () => {
                 <div className="projects-scroll-window">
                     <motion.div style={{ x }} className="projects-gallery" ref={galleryRef}>
                         {projects.map((project, index) => (
-                            <ProjectCard key={index} project={project} onOpen={() => setSelectedProject(project)} />
+                            <ProjectCard
+                                key={index}
+                                project={project}
+                                index={index}
+                                total={projects.length}
+                                scrollYProgress={scrollYProgress} // <--- Tu podávame progress do kariet
+                                onOpen={() => setSelectedProject(project)}
+                            />
                         ))}
                     </motion.div>
                 </div>

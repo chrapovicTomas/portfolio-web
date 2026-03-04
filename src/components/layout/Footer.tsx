@@ -1,5 +1,5 @@
 import React from 'react';
-import { Github, Linkedin, Mail } from 'lucide-react';
+import { Github, Linkedin, Mail, Instagram } from 'lucide-react';
 import './Footer.css';
 
 const Footer: React.FC = () => {
@@ -37,7 +37,15 @@ const Footer: React.FC = () => {
                         </nav>
 
                         <div className="footer-site-box glass-panel">
-                            <p>/ Powered by React /</p>
+                            <h4>/ Contact me /</h4>
+                            <div className="contact-list">
+                                <a href="mailto:tomas.chrapovic@gmail.com">
+                                    <Mail size={16} /> chrapovic.tomas@gmail.com
+                                </a>
+                                <a href="https://instagram.com/tomas.chrapovic" target="_blank" rel="noopener noreferrer">
+                                    <Instagram size={16} /> tomas.chrapovic
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
