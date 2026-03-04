@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence, useInView, MotionValue } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence, MotionValue } from 'framer-motion';
 import { Github, ArrowDown, X } from 'lucide-react';
 import './Projects.css';
 

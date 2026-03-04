@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion, useScroll, useVelocity, useTransform, useSpring } from 'framer-motion';
-import { ParticleSphere } from '../ui/ParticleSphere';
 import './About.css';
 
 const About: React.FC = () => {
@@ -9,11 +8,7 @@ const About: React.FC = () => {
     const smoothVelocity = useSpring(scrollVelocity, { damping: 50, stiffness: 400 });
 
     const skewX = useTransform(smoothVelocity, [-1000, 0, 1000], [-3, 0, 3]);
-    const shiftX1 = useTransform(smoothVelocity, [-1000, 0, 1000], [25, 0, -25]);
-    const shiftX2 = useTransform(smoothVelocity, [-1000, 0, 1000], [-25, 0, 25]);
-    const shiftX3 = useTransform(smoothVelocity, [-1000, 0, 1000], [10, 0, -10]);
     const yOffsets = useTransform(smoothVelocity, [-1000, 0, 1000], [5, 0, -5]);
-    const glitchOpacity = useTransform(smoothVelocity, [-500, -50, 0, 50, 500], [0.7, 0, 0, 0, 0.7]);
 
     return (
         <section id="about" className="about section">
@@ -51,7 +46,7 @@ const About: React.FC = () => {
                         </p>
                     </motion.div>
 
-                    <div
+                    <motion.div
                         className="about-image-container relative"
                         initial={{ opacity: 0, scale: 0.95, y: 40 }}
                         whileInView={{ opacity: 1, scale: 1, y: 0 }}
@@ -63,7 +58,7 @@ const About: React.FC = () => {
                         <div className="profile-image-wrapper relative z-10">
                             <img src="/portrait.png" alt="Tomáš Chrapovič" className="profile-image" />
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </section>

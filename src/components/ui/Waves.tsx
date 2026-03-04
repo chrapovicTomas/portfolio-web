@@ -26,7 +26,6 @@ export function Waves({
     className = "",
     strokeColor = "#ffffffff",  // White lines
     backgroundColor = "#000000",  // Black background
-    pointerSize = 0.5
 }: WavesProps) {
     const containerRef = useRef<HTMLDivElement>(null)
     const svgRef = useRef<SVGSVGElement>(null)
