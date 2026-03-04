@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Terminal, Database, Layout, Server, Figma, Code, GitBranch, Users, MessageSquare, Target, Lightbulb, Clock, BookOpen, BrainCircuit } from 'lucide-react';
+import { Terminal, Database, Layout, Server, Figma, Code, GitBranch, Users, MessageSquare, Target, Lightbulb, Clock, BrainCircuit } from 'lucide-react';
 import './Skills.css';
 
 const hardSkills = [
