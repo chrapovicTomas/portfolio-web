@@ -200,6 +200,7 @@
 .editor-body code {
     white-space: pre-wrap;
     display: inline;
+    word-break: break-all;
 }
 
 .cursor {

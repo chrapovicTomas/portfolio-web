@@ -186,6 +186,17 @@
     flex-wrap: wrap;
 }
 
+@media (max-width: 480px) {
+    .footer-nav {
+        gap: 0.6rem;
+        justify-content: flex-start;
+    }
+
+    .footer-nav a {
+        font-size: 0.85rem;
+    }
+}
+
 .footer-nav a {
     color: var(--text-secondary);
     font-size: 0.95rem;

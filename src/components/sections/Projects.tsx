@@ -1,69 +1,19 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, MotionValue } from 'framer-motion';
 import { Github, ArrowDown, X } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 import './Projects.css';
 
-const projects = [
-    {
-        title: "Dynamic Liquid Morph",
-        description: "Interactive web application focused on real-time soft body physics simulation",
-        details: (
-            <>
-                <p>This project is an interactive web application focused on real-time soft body physics simulation. The program utilizes the Three.js library and implements a physical model based on a Mass-Spring System. The aim of the work is to demonstrate the numerical simulation of physical forces—such as elasticity, damping, and surface tension—within a WebGL environment.</p>
-                <h4 style={{ marginTop: '1.2rem', marginBottom: '0.8rem', color: 'var(--text-primary)' }}>Key Features</h4>
-                <ul style={{ paddingLeft: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-secondary)' }}>
-                    <li><strong style={{ color: 'var(--text-primary)' }}>Physics Simulation:</strong> Real-time calculation of deformations using Hooke's Law with an integrated damping factor.</li>
-                    <li><strong style={{ color: 'var(--text-primary)' }}>Dynamic Morphing:</strong> An algorithm for smooth transformation of vertex rest positions between sphere, cube, cylinder, and pyramid shapes.</li>
-                    <li><strong style={{ color: 'var(--text-primary)' }}>PBR Rendering:</strong> Physically Based Rendering using HDR maps (Image-Based Lighting) for realistic material simulation.</li>
-                    <li><strong style={{ color: 'var(--text-primary)' }}>Interactive Deformation:</strong> Implementation of raycasting for local geometry manipulation using the mouse cursor.</li>
-                    <li><strong style={{ color: 'var(--text-primary)' }}>Simulation Stability:</strong> Use of a Fixed Time Step with an accumulator to ensure consistent physics behavior regardless of frame rate.</li>
-                </ul>
-            </>
-        ),
-        image: "/dym_photo.png",
-        video: "/dyn_video.mp4",
-        tags: ["Three.js", "JavaScript", "Vite"],
-        githubUrl: "https://github.com/chrapovicTomas/dynamic-liquid-morph"
-    },
-    {
-        title: "Poke-tracker",
-        description: "Web application for tracking Pokemon TCG collections.",
-        details: (
-            <>
-                <p>PokeTracker is a modern web application built with Next.js that allows collectors and investors to effortlessly track the value of their Pokémon TCG (Trading Card Game) collections. Rather than manually checking prices, PokeTracker lets you add your cards or sealed products, and uses an automated web scraper to fetch real-time market prices directly from TCGPlayer.</p>
-                <h4 style={{ marginTop: '1.2rem', marginBottom: '0.8rem', color: 'var(--text-primary)' }}>Key Features</h4>
-                <ul style={{ paddingLeft: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-secondary)' }}>
-                    <li><strong style={{ color: 'var(--text-primary)' }}>Portfolio Dashboard:</strong> View your total collection value, total investment (buy price), and calculate your overall profit or loss.</li>
-                    <li><strong style={{ color: 'var(--text-primary)' }}>Automated Price Scraping:</strong> Built-in web scraper using Puppeteer and Cheerio to fetch the latest market prices from TCGPlayer URLs.</li>
-                    <li><strong style={{ color: 'var(--text-primary)' }}>Price History Charts:</strong> Visualizes the price trend of your tracked items over time using Recharts.</li>
-                    <li><strong style={{ color: 'var(--text-primary)' }}>Categorization:</strong> Group items by type (Single Cards, Booster Packs, Elite Trainer Boxes, Booster Bundles, etc.).</li>
-                    <li><strong style={{ color: 'var(--text-primary)' }}>User Authentication:</strong> Secure user login and registration powered by NextAuth.js.</li>
-                </ul>
-            </>
-        ),
-        image: "/poke.png",
-        video: "/poke_video.mp4",
-        tags: ["Next.js", "Prisma", "SQLite", "NextAuth.js", "Cheerio", "Puppeteer", "Recharts"],
-        githubUrl: "https://github.com/chrapovicTomas/poketracker"
-    },
-    {
-        title: "Website for Pizza Restaurant",
-        description: "Informational website for a pizza restaurant.",
-        details: "A high-performance, visually striking web presentation for Pizzeria Heyday located in Snina, Slovakia. This project focuses on a premium aesthetic, seamless user experience, and mobile-first conversion.",
-        image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80&w=800",
-        tags: ["React", "HTML", "TypeScript", "Next.js", "Tailwind CSS"],
-        githubUrl: "https://github.com/chrapovicTomas/heyday_web"
-    },
-
-    {
-        title: "Optimizing the HQC Post-Quantum Cipher - Bachelor Thesis",
-        description: "Bachelor thesis repository",
-        details: "Cryptography faces a major challenge: the rapid development of quantum computers. Modern encryption algorithms, such as RSA, do not provide sufficient protection against quantum attacks. This issue is being addressed by the NIST, which is responsible for the standardization process of post-quantum cryptographic algorithms. One of these algorithms is HQC, which is the focus of this thesis. The aim of this thesis is to optimize the HQC cipher with the goal of improving its time and memory efficiency. We describe the basic concepts of postquantum cryptography and the HQC scheme, focus on its implementation and optimization of key operations, and perform measurements of time and memory complexity and evaluate the success of the optimization.",
-        image: "/TUKE.png",
-        tags: ["LaTeX", "C++"],
-        githubUrl: "https://github.com/chrapovicTomas/thesis"
-    }
-];
+interface Project {
+    id: string;
+    title: string;
+    description: string;
+    details: string | React.ReactNode;
+    image: string;
+    video?: string;
+    tags: string[];
+    githubUrl?: string;
+}
 
 interface ProjectCardProps {
     project: any;
@@ -168,8 +118,49 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, total, scroll
 const Projects: React.FC = () => {
     const targetRef = useRef<HTMLDivElement>(null);
     const galleryRef = useRef<HTMLDivElement>(null);
-    const [selectedProject, setSelectedProject] = useState<any | null>(null);
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [scrollDistance, setScrollDistance] = useState(0);
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            if (!import.meta.env.VITE_SUPABASE_URL) {
+                console.warn("Supabase is not configured yet. Set VITE_SUPABASE_URL.");
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .order('display_order', { ascending: true });
+
+                if (error) throw error;
+
+                if (data) {
+                    const mappedProjects = data.map(p => ({
+                        id: p.id,
+                        title: p.title,
+                        description: p.description,
+                        details: p.details,
+                        image: p.image,
+                        video: p.video,
+                        tags: p.tags || [],
+                        githubUrl: p.github_url
+                    }));
+                    setProjects(mappedProjects);
+                }
+            } catch (error) {
+                console.error("Error fetching projects:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProjects();
+    }, []);
 
     const { scrollYProgress } = useScroll({
         target: targetRef,
@@ -178,16 +169,23 @@ const Projects: React.FC = () => {
 
     useEffect(() => {
         const calculateScrollDistance = () => {
-            if (galleryRef.current) {
+            if (galleryRef.current && projects.length > 0) {
                 // Total scrollable width minus viewport width
                 setScrollDistance(galleryRef.current.scrollWidth - window.innerWidth);
             }
         };
 
         calculateScrollDistance();
+
+        // Recalculate slightly after projects load and render
+        const timeout = setTimeout(calculateScrollDistance, 100);
+
         window.addEventListener('resize', calculateScrollDistance);
-        return () => window.removeEventListener('resize', calculateScrollDistance);
-    }, []);
+        return () => {
+            window.removeEventListener('resize', calculateScrollDistance);
+            clearTimeout(timeout);
+        };
+    }, [projects]);
 
     // Plynulý posun, ale aplikujeme ho iba medzi 0.15 a 0.85 (15% padding)
     const x = useTransform(scrollYProgress, [0.15, 0.85], [0, -scrollDistance]);
@@ -232,16 +230,26 @@ const Projects: React.FC = () => {
 
                 <div className="projects-scroll-window">
                     <motion.div style={{ x }} className="projects-gallery" ref={galleryRef}>
-                        {projects.map((project, index) => (
-                            <ProjectCard
-                                key={index}
-                                project={project}
-                                index={index}
-                                total={projects.length}
-                                scrollYProgress={scrollYProgress} // <--- Tu podávame progress do kariet
-                                onOpen={() => setSelectedProject(project)}
-                            />
-                        ))}
+                        {isLoading ? (
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw', height: '60vh' }}>
+                                <p style={{ color: 'var(--text-secondary)' }}>Loading projects database...</p>
+                            </div>
+                        ) : projects.length === 0 ? (
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw', height: '60vh' }}>
+                                <p style={{ color: 'var(--text-secondary)' }}>No projects found or missing Database connection credentials in .env.local file.</p>
+                            </div>
+                        ) : (
+                            projects.map((project, index) => (
+                                <ProjectCard
+                                    key={project.id || index}
+                                    project={project}
+                                    index={index}
+                                    total={projects.length}
+                                    scrollYProgress={scrollYProgress}
+                                    onOpen={() => setSelectedProject(project)}
+                                />
+                            ))
+                        )}
                     </motion.div>
                 </div>
             </div>
@@ -293,7 +301,7 @@ const Projects: React.FC = () => {
                                 <div className="modal-details">
                                     <h3>About project</h3>
                                     {typeof selectedProject.details === 'string' ? (
-                                        <p>{selectedProject.details}</p>
+                                        <div className="custom-details" dangerouslySetInnerHTML={{ __html: selectedProject.details }} />
                                     ) : (
                                         <div className="custom-details">{selectedProject.details}</div>
                                     )}

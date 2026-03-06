@@ -19,7 +19,7 @@ const softSkills = [
     { name: 'Communication', icon: <MessageSquare size={20} />, type: 'soft' },
     { name: 'Teamwork', icon: <Users size={20} />, type: 'soft' },
     { name: 'Adaptability', icon: <Target size={20} />, type: 'soft' },
-    { name: 'Time Mgmt', icon: <Clock size={20} />, type: 'soft' },
+    { name: 'Time Management', icon: <Clock size={20} />, type: 'soft' },
     { name: 'Problem Solving', icon: <BrainCircuit size={20} />, type: 'soft' },
     { name: 'Creativity', icon: <Lightbulb size={20} />, type: 'soft' }
 ];
