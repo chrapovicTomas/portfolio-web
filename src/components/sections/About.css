@@ -1,23 +1,49 @@
-.about {
+.about-section-wrapper {
     background-color: var(--bg-main);
+    position: relative;
+    padding-bottom: 6rem;
+    overflow: hidden;
 }
 
-.section-header {
+/* Very subtle Mesh Gradient */
+.about-section-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(76, 0, 255, 0.06) 0%, transparent 30%),
+        radial-gradient(circle at 85% 80%, rgba(0, 163, 255, 0.04) 0%, transparent 20%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.about-container-main {
+    position: relative;
+    z-index: 10;
+}
+
+.section-header.center {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 4rem;
+    text-align: center;
+    gap: 0.5rem;
+    margin-bottom: 0px;
+    /* Space is handled by Lamp padding/content transform */
 }
 
 .section-title {
     font-size: 2.5rem;
 }
 
-.section-line {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--glass-border) 0%, transparent 100%);
-    max-width: 300px;
+.section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .about-content {
@@ -50,6 +76,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    perspective: 1000px;
 }
 
 .profile-image-wrapper {
@@ -62,12 +89,32 @@
     padding: 0;
     background: transparent;
     box-shadow: none;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    /* We remove the drop-shadow as it breaks the illusion of the image being "part" of the background */
+    overflow: hidden;
 }
 
-.profile-image-wrapper:hover {
-    transform: translateY(-4px) scale(1.01);
+
+/* Diagonal Shine Effect */
+.profile-image-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 10%;
+    height: 100%;
+    background: linear-gradient(to right,
+            rgba(59, 130, 246, 0) 0%,
+            rgba(59, 130, 246, 0.2) 25%,
+            rgba(139, 92, 246, 0.2) 75%,
+            rgba(139, 92, 246, 0) 100%);
+    transform: skewX(-25deg);
+    transition: none;
+    pointer-events: none;
+    z-index: 15;
+}
+
+.profile-image-wrapper:hover::after {
+    left: 150%;
+    transition: left 1s ease-in-out;
 }
 
 .profile-image-placeholder,

@@ -153,23 +153,24 @@ export function Waves({
 
     // Mouse handler
     const onMouseMove = (e: MouseEvent) => {
-        updateMousePosition(e.pageX, e.pageY)
+        updateMousePosition(e.clientX, e.clientY)
     }
 
     // Touch handler
     const onTouchMove = (e: TouchEvent) => {
-        e.preventDefault()
         const touch = e.touches[0]
         updateMousePosition(touch.clientX, touch.clientY)
     }
 
     // Update mouse position
-    const updateMousePosition = (x: number, y: number) => {
-        if (!boundingRef.current) return
+    const updateMousePosition = (clientX: number, clientY: number) => {
+        if (!containerRef.current) return
 
+        const rect = containerRef.current.getBoundingClientRect()
         const mouse = mouseRef.current
-        mouse.x = x - boundingRef.current.left
-        mouse.y = y - boundingRef.current.top + window.scrollY
+        
+        mouse.x = clientX - rect.left
+        mouse.y = clientY - rect.top
 
         if (!mouse.set) {
             mouse.sx = mouse.x

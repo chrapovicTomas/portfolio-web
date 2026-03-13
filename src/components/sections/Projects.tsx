@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, MotionValue } from 'framer-motion';
-import { Github, ArrowDown, X } from 'lucide-react';
+import { Github, X, Folder } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import './Projects.css';
 
@@ -36,22 +36,22 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, total, scroll
     // Scale: na krajoch menšia (0.85), v strede normálna (1) - vyrieši to problém s orezávaním
     const scale = useTransform(scrollYProgress, inputRange, [0.85, 1, 0.85]);
 
-    // RotateY: natočenie. Keď je napravo, natočí sa k tebe dovnútra (-25deg). V strede je rovno (0deg).
-    const rotateY = useTransform(scrollYProgress, inputRange, [25, 0, -25]);
+    // RotateY: jemnejšie natočenie pre pocit objemu bez skreslenia
+    const rotateY = useTransform(scrollYProgress, inputRange, [15, 0, -15]);
 
-    // Z: 3D hĺbka. Na krajoch je potlačená dozadu (-150px), v strede vystúpi (20px)
-    const z = useTransform(scrollYProgress, inputRange, [-150, 20, -150]);
+    // RotateX: takmer konštantný náklon pre efekt "položeného" priečinka
+    const rotateX = useTransform(scrollYProgress, inputRange, [8, 5, 8]);
+
+    // Z: 3D hĺbka. Upravené tak, aby karty nikdy nešli "za" podklad (iba dopredu)
+    const z = useTransform(scrollYProgress, inputRange, [0, 80, 0]);
 
     // Opacity: Na krajoch mierne priehľadná, v strede jasná
     const opacity = useTransform(scrollYProgress, inputRange, [0.4, 1, 0.4]);
 
-    // Z-index: Stredná (aktívna) karta musí byť najvyššie, aby nebola prekrytá
-    const zIndex = useTransform(scrollYProgress, inputRange, [0, 10, 0]);
+    // Z-index: Zvýšime základnú hladinu, aby boli karty vždy nad trackom a ostatným obsahom
+    const zIndex = useTransform(scrollYProgress, inputRange, [20, 50, 20]);
 
-    // Zablokovať klikanie na karty, ktoré nie sú blízko stredu (zrýchli a sprehľadní to UX)
-    const pointerEvents = useTransform(scrollYProgress, (v) => {
-        return Math.abs(v - center) <= span * 0.7 ? "auto" : "none";
-    });
+    // Zablokovať klikanie na karty už nechceme
 
     // Podsvietenie (glow) a border pre aktívnu kartu
     const boxShadow = useTransform(scrollYProgress, inputRange, [
@@ -68,47 +68,52 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, total, scroll
 
     return (
         <motion.div
-            className="project-card glass-panel"
+            className="project-card"
+            onClick={onOpen}
             // Použijeme priamo štýly z useTransform pre plynulý efekt
             style={{
                 scale,
                 rotateY,
+                rotateX,
                 z,
                 opacity,
                 zIndex,
                 boxShadow,
                 borderColor,
-                pointerEvents: pointerEvents as any
+                cursor: 'pointer'
             }}
             whileHover={{ y: -10 }} // Jemné posunutie nahor pri hoveri stále funguje
-        >            <div className="project-image">
+        >
+            <div className="folder-tab">
+                <Folder size={12} className="folder-icon" />
+                <span>Project {String(index + 1).padStart(2, '0')}</span>
+            </div>
+            <div className="project-image">
                 <img src={project.image} alt={project.title} />
-                <div className="project-links">
-                    <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="project-link">
-                        <Github size={20} />
-                    </a>
-                </div>
             </div>
 
             <div className="project-content">
-                <h3 className="project-title">{project.title}</h3>
+                <div className="project-header-row">
+                    <h3 className="project-title">{project.title}</h3>
+                    {project.githubUrl && (
+                        <a 
+                            href={project.githubUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="github-mini-link"
+                            onClick={(e) => e.stopPropagation()}
+                            title="View on GitHub"
+                        >
+                            <Github size={18} />
+                        </a>
+                    )}
+                </div>
                 <p className="project-desc">{project.description}</p>
 
                 <div className="project-tags">
                     {project.tags.map((tag: string) => (
                         <span key={tag} className="project-tag">{tag}</span>
                     ))}
-                </div>
-
-                <div className="project-footer">
-                    <button
-                        className="expand-button"
-                        onClick={onOpen}
-                        aria-label="Viac info o projekte"
-                    >
-                        <span className="expand-text">About project</span>
-                        <ArrowDown size={20} />
-                    </button>
                 </div>
             </div>
         </motion.div>
@@ -206,20 +211,21 @@ const Projects: React.FC = () => {
     return (
         <section id="projects" className="projects-section-wrapper" ref={targetRef}>
             <div className="projects-sticky-container">
-                <div className="container">
+                <div className="container" style={{ pointerEvents: 'none', position: 'relative', zIndex: 100 }}>
                     <motion.div
                         initial={{ opacity: 0, y: 50 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.6 }}
                         className="section-header center"
+                        style={{ pointerEvents: 'auto' }} /* Ale text a track chceme mať prístupný ak by tam boli linky */
                     >
                         <h2 className="section-title">My <span className="text-gradient">Projects.</span></h2>
                         <p className="section-subtitle">A selection of my recent work and experiments.</p>
                     </motion.div>
 
                     {/* Horizontal Progress Timeline */}
-                    <div className="track-wrapper">
+                    <div className="track-wrapper" style={{ pointerEvents: 'auto' }}>
                         <div className="project-track"></div>
                         <motion.div
                             className="project-track-glow"

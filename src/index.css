@@ -5,22 +5,24 @@
   --bg-main: #0a0a0a;
   --bg-secondary: #141414;
   --bg-surface: #1e1e1e;
-  
+
   --text-primary: #f5f5f5;
   --text-secondary: #a0a0a0;
-  
-  --accent-primary: #3b82f6; /* Neon Blue */
-  --accent-secondary: #8b5cf6; /* Neon Purple */
+
+  --accent-primary: #3b82f6;
+  /* Neon Blue */
+  --accent-secondary: #8b5cf6;
+  /* Neon Purple */
   --accent-gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  
+
   --border-color: rgba(255, 255, 255, 0.1);
   --glass-bg: rgba(20, 20, 20, 0.7);
   --glass-border: rgba(255, 255, 255, 0.05);
-  
+
   /* Typography */
   --font-sans: 'Inter', sans-serif;
   --font-display: 'Outfit', sans-serif;
-  
+
   /* Utilities */
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -50,7 +52,12 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-display);
   font-weight: 700;
   line-height: 1.2;
